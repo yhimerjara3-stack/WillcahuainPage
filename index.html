@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conservación Inspiradora y Valoración Social de Willcahuain - Legado Wari</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        stoneEarth: '#2d241e',
+                        wariClay: '#b85d34',
+                        andeanGold: '#d99b26',
+                        highlandGreen: '#2f4f3e',
+                        sandLight: '#f7f4ee',
+                        stoneDark: '#1a1411'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hero-pattern {
+            background-color: #1a1411;
+            background-image: radial-gradient(#b85d34 0.75px, transparent 0.75px), radial-gradient(#2d241e 0.75px, #1a1411 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+
+        .stone-texture {
+            background: linear-gradient(135deg, #2d241e 0%, #1a1411 100%);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f7f4ee;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #b85d34;
+            border-radius: 4px;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #1a1411;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #d99b26;
+        }
+    </style>
+</head>
+
+<body class="bg-sandLight dark:bg-stoneDark text-stoneEarth dark:text-sandLight font-sans antialiased transition-colors duration-300 selection:bg-wariClay selection:text-white">
+
+    <!-- MODAL / VISOR DE FOTO GRANDE (LIGHTBOX) -->
+    <div id="image-modal" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity duration-300">
+        <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
+            <!-- Botón de Cerrar (X) -->
+            <button onclick="closeModal()" class="absolute -top-12 right-0 text-white hover:text-andeanGold text-3xl font-bold bg-white/10 hover:bg-white/20 w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer">
+                &times;
+            </button>
+            <!-- Imagen Ampliada -->
+            <img id="modal-img" src="" alt="Vista Ampliada" class="max-h-[80vh] w-auto object-contain rounded-2xl shadow-2xl border border-white/10">
+            <p id="modal-caption" class="text-white text-sm mt-4 text-center font-medium"></p>
+        </div>
+    </div>
+
+    <!-- Toast de Notificaciones -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- HEADER / NAVEGACIÓN -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-stoneDark/95 backdrop-blur-md border-b border-stone-200 dark:border-wariClay/30 shadow-sm transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-wariClay to-andeanGold flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-landmark text-white text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-widest text-wariClay dark:text-andeanGold font-bold block">Paria, Huaraz · Áncash</span>
+                    <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-stoneEarth dark:text-white">Willcahuain Vivo</h1>
+                </div>
+            </div>
+
+            <!-- Menú Desktop -->
+            <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                <a href="#recorrido" class="hover:text-wariClay dark:hover:text-andeanGold transition-colors">Recorrido Fotográfico</a>
+                <a href="#aportes" class="hover:text-wariClay dark:hover:text-andeanGold transition-colors">Aportes Comunitarios</a>
+                <a href="#mapa" class="hover:text-wariClay dark:hover:text-andeanGold transition-colors">Guía del Visitante</a>
+                <a href="#encuesta" class="hover:text-wariClay dark:hover:text-andeanGold transition-colors">Compromiso Ciudadano</a>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <!-- Botón Modo Oscuro -->
+                <button id="theme-toggle-btn" class="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-700 dark:text-andeanGold hover:scale-105 transition-transform cursor-pointer" title="Cambiar Tema">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+                <a href="#encuesta" class="hidden sm:inline-flex bg-gradient-to-r from-wariClay to-amber-600 hover:from-amber-600 hover:to-wariClay text-white px-4 py-2.5 rounded-xl font-semibold shadow-md transition-all text-sm items-center space-x-2">
+                    <i class="fa-solid fa-signature"></i>
+                    <span>Firmar por la Conservación</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO & TÍTULO INSPIRADOR -->
+    <section class="relative hero-pattern text-white py-24 lg:py-32 overflow-hidden border-b border-wariClay/30">
+        <div class="absolute inset-0 bg-black/60 z-0"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center space-x-2 bg-wariClay/30 border border-wariClay/50 px-3.5 py-1.5 rounded-full text-andeanGold text-xs font-semibold tracking-wide uppercase">
+                    <i class="fa-solid fa-seedling"></i>
+                    <span>Conservación Inspiradora y Legado Ancestral</span>
+                </div>
+                <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight text-white">
+                    Preservando el Legado de <span class="text-andeanGold">Willcahuain</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-200 leading-relaxed font-light">
+                    Cada muro milenario de piedra y barro guarda la memoria de nuestros antepasados Wari. Proteger este tesoro en el Callejón de Huaylas es un acto de identidad, orgullo y compromiso con las futuras generaciones.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                    <a href="#recorrido" class="bg-andeanGold hover:bg-amber-600 text-stoneDark font-bold px-6 py-3.5 rounded-xl text-center shadow-lg transition-all flex items-center justify-center space-x-2">
+                        <span>Explorar Recorrido Real</span>
+                        <i class="fa-solid fa-camera-retro"></i>
+                    </a>
+                    <a href="#aportes" class="bg-white/10 hover:bg-white/25 border border-white/20 text-white font-semibold px-6 py-3.5 rounded-xl text-center backdrop-blur-sm transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-hands-holding-child text-andeanGold"></i>
+                        <span>Aportar a la Conservación</span>
+                    </a>
+                </div>
+            </div>
+            <div class="lg:col-span-5">
+                <div class="relative bg-stoneDark/90 p-6 rounded-3xl border border-wariClay/40 shadow-2xl backdrop-blur-md">
+                    <div class="absolute -top-3 -right-3 bg-andeanGold text-stoneDark text-xs font-extrabold px-3.5 py-1.5 rounded-full shadow-lg">
+                        Patrimonio Cultural de la Nación
+                    </div>
+                    <div class="space-y-4">
+                        <div class="h-52 sm:h-60 rounded-2xl overflow-hidden relative shadow-inner">
+                            <img src="ingreso.jpg" alt="Portada de ingreso Willkawain" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+                                <p class="text-white text-xs sm:text-sm font-medium"><i class="fa-solid fa-location-dot text-andeanGold mr-1"></i> Ingreso Oficial &middot; Centro Poblado Paria</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 text-center">
+                            <div class="bg-stoneEarth p-3 rounded-xl border border-white/5">
+                                <span class="block text-xl font-bold text-andeanGold">3,500</span>
+                                <span class="text-[10px] text-gray-300">m s. n. m.</span>
+                            </div>
+                            <div class="bg-stoneEarth p-3 rounded-xl border border-white/5">
+                                <span class="block text-xl font-bold text-wariClay">Wari</span>
+                                <span class="text-[10px] text-gray-300">Cultura Horizonte</span>
+                            </div>
+                            <div class="bg-stoneEarth p-3 rounded-xl border border-white/5">
+                                <span class="block text-xl font-bold text-emerald-400">Activo</span>
+                                <span class="text-[10px] text-gray-300">Valor Social</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RECORRIDO FOTOGRÁFICO -->
+    <section id="recorrido" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-wariClay dark:text-andeanGold font-semibold uppercase tracking-wider text-sm block mb-2">Galería Fotográfica Real</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-stoneEarth dark:text-white">Recorrido por el Monumento Arqueológico</h2>
+            <div class="w-24 h-1.5 bg-andeanGold mx-auto mt-4 rounded-full"></div>
+            <p class="text-stone-600 dark:text-gray-300 mt-4 text-base sm:text-lg">
+                Explora las vistas reales del complejo capturadas en el sitio, destacando su mampostería de piedra y el imponente mausoleo.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div class="lg:col-span-4 space-y-3" id="tour-nav-list">
+                <button onclick="selectTourPoint(0)" id="tour-btn-0" class="w-full text-left p-4 rounded-2xl border transition-all flex items-center space-x-4 bg-white dark:bg-stone-800 border-wariClay shadow-md cursor-pointer">
+                    <div class="w-12 h-12 rounded-xl bg-wariClay text-white flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-archway"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-stoneEarth dark:text-white text-base">Portada de Ingreso Oficial</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Bienvenida al complejo arqueológico</p>
+                    </div>
+                </button>
+
+                <button onclick="selectTourPoint(1)" id="tour-btn-1" class="w-full text-left p-4 rounded-2xl border transition-all flex items-center space-x-4 bg-white/60 dark:bg-stone-800/60 border-stone-200 dark:border-stone-700 hover:border-wariClay shadow-sm cursor-pointer">
+                    <div class="w-12 h-12 rounded-xl bg-amber-600 text-white flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-mountain"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-stoneEarth dark:text-white text-base">Mausoleo y Entorno Paisajístico</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Arquitectura lítica y cielo andino</p>
+                    </div>
+                </button>
+
+                <button onclick="selectTourPoint(2)" id="tour-btn-2" class="w-full text-left p-4 rounded-2xl border transition-all flex items-center space-x-4 bg-white/60 dark:bg-stone-800/60 border-stone-200 dark:border-stone-700 hover:border-wariClay shadow-sm cursor-pointer">
+                    <div class="w-12 h-12 rounded-xl bg-highlandGreen text-white flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-cube"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-stoneEarth dark:text-white text-base">Mampostería de los Muros</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Piedra labrada con mortero de barro</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="lg:col-span-8 bg-white dark:bg-stone-800 rounded-3xl shadow-xl border border-stone-200 dark:border-stone-700 overflow-hidden">
+                <div class="relative h-72 sm:h-96 overflow-hidden bg-stone-900">
+                    <img id="tour-img" src="ingreso.jpg" alt="Foto Real Willcahuain" class="w-full h-full object-cover transition-all duration-700 cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-t from-stoneDark/90 via-transparent to-transparent flex items-end p-6 pointer-events-none">
+                        <div>
+                            <span id="tour-tag" class="bg-wariClay text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Acceso</span>
+                            <h3 id="tour-title" class="text-2xl sm:text-3xl font-extrabold text-white mt-2">Portada de Ingreso a Willkawain</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 sm:p-8 space-y-6">
+                    <p id="tour-desc" class="text-stone-600 dark:text-gray-300 text-base leading-relaxed">
+                        El acceso principal recibe a los visitantes en el centro poblado de Paria, invitándonos a reflexionar sobre la importancia de conservar este monumento histórico frente al impacto ambiental y el turismo desordenado.
+                    </p>
+                    <div class="bg-sandLight dark:bg-stoneDark p-5 rounded-2xl border border-stone-200 dark:border-stone-700">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-wariClay dark:text-andeanGold mb-2 flex items-center">
+                            <i class="fa-solid fa-quote-left mr-2 text-lg"></i> Mensaje Inspirador de Conservación:
+                        </h4>
+                        <p id="tour-quote" class="text-sm italic text-stone-700 dark:text-gray-300">
+                            "Conservar Willcahuain es un compromiso vivo: cada piedra unida con barro representa el ingenio de nuestros antepasados que merece ser preservado intacto para las nuevas generaciones."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- APORTES Y PARTICIPACIÓN COMUNITARIA -->
+    <section id="aportes" class="py-20 bg-stone-100 dark:bg-stoneDark/60 border-t border-stone-200 dark:border-stone-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-wariClay dark:text-andeanGold font-semibold uppercase tracking-wider text-sm block mb-2">Acción Colectiva</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-stoneEarth dark:text-white">Aportes para la Puesta en Valor</h2>
+                <div class="w-24 h-1.5 bg-andeanGold mx-auto mt-4 rounded-full"></div>
+                <p class="text-stone-600 dark:text-gray-300 mt-4 text-base sm:text-lg">
+                    Estudiantes, guías, investigadores y ciudadanos pueden proponer iniciativas para mejorar la conservación física y la difusión educativa del complejo.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-5 bg-white dark:bg-stone-800 p-8 rounded-3xl shadow-xl border border-stone-200 dark:border-stone-700">
+                    <h3 class="text-xl font-bold text-stoneEarth dark:text-white mb-6 flex items-center space-x-2">
+                        <i class="fa-solid fa-lightbulb text-andeanGold"></i>
+                        <span>Enviar mi Propuesta de Conservación</span>
+                    </h3>
+                    <form id="aporte-form" onsubmit="handleAporteSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">Nombre Completo</label>
+                            <input type="text" id="aporte-name" required placeholder="Ej. Yhimer Jara" class="w-full px-4 py-3 rounded-xl border border-stone-300 dark:border-stone-700 focus:outline-none focus:ring-2 focus:ring-wariClay text-sm bg-stone-50 dark:bg-stone-900 text-stoneEarth dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">Área de Aporte</label>
+                            <select id="aporte-cat" class="w-full px-4 py-3 rounded-xl border border-stone-300 dark:border-stone-700 focus:outline-none focus:ring-2 focus:ring-wariClay text-sm bg-stone-50 dark:bg-stone-900 text-stoneEarth dark:text-white">
+                                <option value="Conservación Ambiental">Conservación Ambiental y Limpieza</option>
+                                <option value="Educación Patrimonial">Educación Patrimonial en Colegios</option>
+                                <option value="Turismo Sostenible">Turismo Sostenible y Comunitario</option>
+                                <option value="Tecnología y Difusión">Tecnología y Difusión Digital</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">Tu Propuesta</label>
+                            <textarea id="aporte-text" required rows="3" placeholder="Ej. Proponemos jornadas de concientización ambiental con estudiantes universitarios en el entorno de Paria." class="w-full px-4 py-3 rounded-xl border border-stone-300 dark:border-stone-700 focus:outline-none focus:ring-2 focus:ring-wariClay text-sm bg-stone-50 dark:bg-stone-900 text-stoneEarth dark:text-white resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-wariClay to-amber-600 hover:from-amber-600 hover:to-wariClay text-white font-bold py-3.5 rounded-xl shadow-lg transition-all text-sm flex items-center justify-center space-x-2 cursor-pointer">
+                            <i class="fa-solid fa-paper-plane text-andeanGold"></i>
+                            <span>Publicar Propuesta</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xl font-bold text-stoneEarth dark:text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-comments text-wariClay"></i>
+                            <span>Propuestas Registradas</span>
+                        </h3>
+                        <span id="aporte-count" class="bg-wariClay text-white text-xs font-bold px-3 py-1 rounded-full">3 aportes</span>
+                    </div>
+
+                    <div id="aportes-container" class="space-y-4 max-h-[520px] overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GUÍA Y MAPA -->
+    <section id="mapa" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-wariClay dark:text-andeanGold font-semibold uppercase tracking-wider text-sm block mb-2">Información del Visitante</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-stoneEarth dark:text-white">Planifica tu Visita Responsable</h2>
+            <div class="w-24 h-1.5 bg-andeanGold mx-auto mt-4 rounded-full"></div>
+            <p class="text-stone-600 dark:text-gray-300 mt-4 text-base sm:text-lg">
+                Datos oficiales basados en la Ficha MINCETUR del Monumento Arqueológico de Willkawain[cite: 1].
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-6 space-y-6">
+                <div class="bg-white dark:bg-stone-800 p-6 rounded-3xl shadow-md border border-stone-200 dark:border-stone-700 space-y-4">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-stone-700 text-wariClay flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-route"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-stoneEarth dark:text-white text-base">Ruta y Distancia</h3>
+                            <p class="text-sm text-stone-600 dark:text-gray-300">A 7 km al noreste de Huaraz (aprox. 20-25 minutos en auto o transporte hacia el centro poblado de Paria)[cite: 1].</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-stone-700 text-highlandGreen flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-stoneEarth dark:text-white text-base">Horario de Visita</h3>
+                            <p class="text-sm text-stone-600 dark:text-gray-300">Lunes a Domingo de 08:00 a.m. a 05:00 p.m. Todo el año[cite: 1].</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-stone-700 text-andeanGold flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-shield-heart"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-stoneEarth dark:text-white text-base">Normas de Conservación</h3>
+                            <p class="text-sm text-stone-600 dark:text-gray-300">No tocar los muros líticos antiguos, no dejar residuos sólidos y respetar los senderos debidamente señalizados.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-6">
+                <div class="bg-stoneDark p-6 rounded-3xl border border-wariClay/40 shadow-2xl relative overflow-hidden h-[400px] flex flex-col justify-between">
+                    <div class="absolute inset-0 opacity-40">
+                        <img src="ingreso.jpg" alt="Willcahuain Mausoleo" class="w-full h-full object-cover">
+                    </div>
+                    <div class="relative z-10 bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                        <span class="text-xs text-andeanGold font-bold uppercase tracking-widest block">Ubicación Estratégica</span>
+                        <h4 class="text-xl font-bold text-white">Complejo Arqueológico Willcahuain</h4>
+                        <p class="text-xs text-gray-300 mt-1">Centro Poblado de Paria, Independencia, Huaraz[cite: 1]</p>
+                    </div>
+                    <div class="relative z-10 flex justify-between items-center bg-stoneEarth/90 p-4 rounded-2xl border border-white/10 backdrop-blur-md">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Administración</span>
+                            <span class="text-sm font-bold text-andeanGold">Dirección Desconcentrada de Cultura - Áncash[cite: 1]</span>
+                        </div>
+                        <a href="https://www.google.com/maps/place/Monumento+Arqueol%C3%B3gico+de+Willkawain+y+Sala+de+Exhibici%C3%B3n./@-9.4888558,-77.5196188,15z" target="_blank" class="bg-wariClay hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 shrink-0">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                            <span>Ver Mapa</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMPROMISO CIUDADANO -->
+    <section id="encuesta" class="stone-texture text-white py-20 relative overflow-hidden border-t border-wariClay/30">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#d99b26_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-andeanGold font-semibold uppercase tracking-wider text-sm block mb-2">Insignia de Guardián del Patrimonio</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Firma tu Compromiso de Conservación</h2>
+                <div class="w-24 h-1.5 bg-wariClay mx-auto mt-4 rounded-full"></div>
+                <p class="text-gray-300 mt-4 text-base">
+                    Sella tu compromiso personal para proteger, difundir y valorar el legado Wari de Willcahuain.
+                </p>
+            </div>
+
+            <div class="bg-stoneEarth/95 p-8 sm:p-10 rounded-3xl border border-wariClay/50 shadow-2xl backdrop-blur-md">
+                <form id="pledge-form" onsubmit="handlePledgeSubmit(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-andeanGold mb-2">Tu Nombre y Apellido</label>
+                            <input type="text" id="pledge-name" required placeholder="Ej. Yhimer Jara" class="w-full px-4 py-3 rounded-xl bg-stoneDark border border-stone-700 text-white text-sm focus:outline-none focus:border-andeanGold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-andeanGold mb-2">Ciudad o Institución</label>
+                            <input type="text" id="pledge-city" required placeholder="Ej. Huaraz / UNASAM" class="w-full px-4 py-3 rounded-xl bg-stoneDark border border-stone-700 text-white text-sm focus:outline-none focus:border-andeanGold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-andeanGold mb-2">¿Por qué es vital conservar Willcahuain?</label>
+                        <select id="pledge-rating" class="w-full px-4 py-3 rounded-xl bg-stoneDark border border-stone-700 text-white text-sm focus:outline-none focus:border-andeanGold">
+                            <option value="Es la máxima expresión de la arquitectura Wari en Áncash">Es la máxima expresión de la arquitectura Wari en Áncash</option>
+                            <option value="Fortalece nuestra identidad cultural e histórica regional">Fortalece nuestra identidad cultural e histórica regional</option>
+                            <option value="Impulsa un turismo sostenible y responsable en Paria">Impulsa un turismo sostenible y responsable en Paria</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-andeanGold mb-2">Tu Compromiso Escrito</label>
+                        <textarea id="pledge-text" required rows="3" placeholder="Ej. Me comprometo a respetar las normas del monumento y a difundir su importancia entre mis compañeros y familiares." class="w-full px-4 py-3 rounded-xl bg-stoneDark border border-stone-700 text-white text-sm focus:outline-none focus:border-andeanGold resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-andeanGold to-amber-600 hover:from-amber-600 hover:to-andeanGold text-stoneDark font-extrabold py-4 rounded-xl shadow-xl transition-all text-base flex items-center justify-center space-x-2 cursor-pointer">
+                        <i class="fa-solid fa-award text-lg"></i>
+                        <span>Firmar y Obtener Insignia Oficial</span>
+                    </button>
+                </form>
+
+                <div class="mt-10 pt-8 border-t border-white/10">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center space-x-2">
+                        <i class="fa-solid fa-signature text-andeanGold"></i>
+                        <span>Guardianes del Patrimonio Registrados</span>
+                    </h3>
+                    <div id="local-pledges-list" class="space-y-3 max-h-60 overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-stoneDark text-white py-12 border-t border-wariClay/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            <div>
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-wariClay to-andeanGold flex items-center justify-center">
+                        <i class="fa-solid fa-landmark text-white text-sm"></i>
+                    </div>
+                    <span class="text-base font-bold">Willcahuain Vivo &middot; Conservación</span>
+                </div>
+                <p class="text-gray-400 text-xs leading-relaxed">
+                    Plataforma interactiva inspirada en la puesta en valor del patrimonio cultural de Huaraz, Áncash.
+                </p>
+            </div>
+            <div class="text-center text-xs text-gray-400">
+                <p class="mb-1"><i class="fa-solid fa-heart text-wariClay mr-1"></i> Protegemos nuestra memoria milenaria.</p>
+                <p>Cultura Wari &middot; Paria &middot; Huaraz &middot; Perú</p>
+            </div>
+            <div class="flex justify-md-end justify-center space-x-4">
+                <a href="#" class="w-10 h-10 rounded-full bg-stoneEarth border border-white/10 flex items-center justify-center hover:bg-wariClay transition-colors text-gray-300 hover:text-white cursor-pointer" title="Ir arriba">
+                    <i class="fa-solid fa-arrow-up"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // --- GESTIÓN DE TEMA OSCURO / CLARO ---
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Cargar preferencia guardada o de sistema
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.className = 'fa-solid fa-sun';
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-stoneDark border-emerald-500/50 text-white' : 'bg-stoneDark border-wariClay/50 text-white';
+            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-triangle-exclamation text-amber-400 mr-2 text-lg"></i>';
+
+            toast.className = `pointer-events-auto flex items-center p-4 rounded-xl border shadow-xl backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0 ${bgColor}`;
+            toast.innerHTML = `${icon} <span class="text-sm font-medium">${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // --- RECORRIDO FOTOGRÁFICO MULTI-FOTO ---
+        const tourPoints = [
+            {
+                tag: "Acceso",
+                title: "Portada de Ingreso a Willkawain",
+                images: [
+                    "ingreso.jpg",
+                    "ingreso2.jpg"
+                ],
+                currentImgIdx: 0,
+                desc: "La portada de piedra tallada da la bienvenida al complejo arqueológico situado en el centro poblado de Paria. Representa el punto de partida para concientizar a los visitantes sobre el respeto y cuidado que merece el patrimonio[cite: 1].",
+                quote: "Conservar Willcahuain es un compromiso vivo: cada piedra unida con barro representa el ingenio de nuestros antepasados que merece ser preservado intacto para las nuevas generaciones."
+            },
+            {
+                tag: "Mausoleo",
+                title: "Estructura Funeraria y Paisaje Andino",
+                images: [
+                    "bloques.jpg",
+                    "bloques2.jpg"
+                ],
+                currentImgIdx: 0,
+                desc: "Vista panorámica del imponente edificio funerario de tres niveles con techos de lajas de piedra. Es considerado el vestigio arquitectónico Wari más grande e importante de la región Áncash[cite: 1].",
+                quote: "La majestuosidad de este mausoleo nos recuerda la grandeza de la ingeniería andina que debemos resguardar frente a los factores climáticos."
+            },
+            {
+                tag: "Arquitectura",
+                title: "Mampostería Lítica y Técnica Constructiva",
+                images: [
+                    "pasaje.jpg",
+                    "pasajes2.jpg"
+                ],
+                currentImgIdx: 0,
+                desc: "Detalle de los muros de piedra unida con mortero de barro y vanos trapezoidales. La conservación de estos paramentos requiere un monitoreo constante y participación activa de la comunidad[cite: 1].",
+                quote: "Cuidar cada muro es proteger la historia viva del Callejón de Huaylas y asegurar que las futuras generaciones comprendan nuestro pasado."
+            }
+        ];
+
+        let currentActivePoint = 0;
+
+        function selectTourPoint(index) {
+            currentActivePoint = index;
+            updateTourDisplay();
+
+            for (let i = 0; i < tourPoints.length; i++) {
+                const btn = document.getElementById(`tour-btn-${i}`);
+                if (i === index) {
+                    btn.className = "w-full text-left p-4 rounded-2xl border transition-all flex items-center space-x-4 bg-white dark:bg-stone-800 border-wariClay shadow-md cursor-pointer";
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-2xl border transition-all flex items-center space-x-4 bg-white/60 dark:bg-stone-800/60 border-stone-200 dark:border-stone-700 hover:border-wariClay shadow-sm cursor-pointer";
+                }
+            }
+        }
+
+        function updateTourDisplay() {
+            const p = tourPoints[currentActivePoint];
+            const imgElement = document.getElementById('tour-img');
+            imgElement.src = p.images[p.currentImgIdx];
+            document.getElementById('tour-tag').innerText = p.tag;
+            document.getElementById('tour-title').innerText = p.title;
+            document.getElementById('tour-desc').innerText = p.desc;
+            document.getElementById('tour-quote').innerText = `"${p.quote}"`;
+
+            let galleryControls = document.getElementById('gallery-controls');
+            if (!galleryControls) {
+                const wrapper = imgElement.parentElement;
+                galleryControls = document.createElement('div');
+                galleryControls.id = 'gallery-controls';
+                galleryControls.className = 'absolute bottom-4 right-4 z-20 flex items-center space-x-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20';
+                wrapper.appendChild(galleryControls);
+            }
+            
+            if (p.images.length > 1) {
+                galleryControls.style.display = 'flex';
+                galleryControls.innerHTML = `
+                    <button onclick="prevTourImage(event)" class="text-white hover:text-andeanGold px-1.5 text-xs font-bold cursor-pointer"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span class="text-white text-xs font-medium">${p.currentImgIdx + 1} / ${p.images.length}</span>
+                    <button onclick="nextTourImage(event)" class="text-white hover:text-andeanGold px-1.5 text-xs font-bold cursor-pointer"><i class="fa-solid fa-chevron-right"></i></button>
+                `;
+            } else {
+                galleryControls.style.display = 'none';
+            }
+
+            imgElement.onclick = () => openModal(p.images[p.currentImgIdx], p.title);
+        }
+
+        function nextTourImage(e) {
+            e.stopPropagation();
+            const p = tourPoints[currentActivePoint];
+            p.currentImgIdx = (p.currentImgIdx + 1) % p.images.length;
+            updateTourDisplay();
+        }
+
+        function prevTourImage(e) {
+            e.stopPropagation();
+            const p = tourPoints[currentActivePoint];
+            p.currentImgIdx = (p.currentImgIdx - 1 + p.images.length) % p.images.length;
+            updateTourDisplay();
+        }
+
+        // --- FUNCIONES DEL MODAL ---
+        function openModal(imgSrc, captionText) {
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-img');
+            const modalCaption = document.getElementById('modal-caption');
+
+            modalImg.src = imgSrc;
+            modalCaption.innerText = captionText;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('image-modal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // --- APORTES Y COMPROMISOS ---
+        let aportesList = [
+            {
+                name: "Prof. Aníbal Espinoza",
+                cat: "Educación Patrimonial",
+                text: "Proponemos organizar visitas guiadas y talleres de educación ambiental para los colegios de Huaraz.",
+                date: "Hace 3 horas"
+            }
+        ];
+
+        function renderAportes() {
+            const container = document.getElementById('aportes-container');
+            document.getElementById('aporte-count').innerText = `${aportesList.length} aportes`;
+            container.innerHTML = '';
+
+            aportesList.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-700 relative';
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h4 class="font-bold text-stoneEarth dark:text-white text-base">${escapeHTML(item.name)}</h4>
+                            <span class="inline-block bg-wariClay/20 text-wariClay dark:text-andeanGold text-[11px] font-bold px-2.5 py-0.5 rounded-full mt-1">
+                                ${escapeHTML(item.cat)}
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs text-stone-400">${escapeHTML(item.date)}</span>
+                            <button onclick="eliminarAporte(${index})" class="text-stone-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer" title="Eliminar aporte">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-stone-600 dark:text-gray-300 text-sm leading-relaxed bg-stone-50 dark:bg-stone-900 p-3 rounded-xl border border-stone-100 dark:border-stone-800">
+                        "${escapeHTML(item.text)}"
+                    </p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function eliminarAporte(index) {
+            if (confirm("¿Estás seguro de que deseas eliminar este aporte?")) {
+                aportesList.splice(index, 1);
+                renderAportes();
+                showToast('Aporte eliminado correctamente', 'warning');
+            }
+        }
+
+        function handleAporteSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('aporte-name').value.trim();
+            const cat = document.getElementById('aporte-cat').value;
+            const text = document.getElementById('aporte-text').value.trim();
+
+            aportesList.unshift({ name, cat, text, date: "Hace un momento" });
+            renderAportes();
+            document.getElementById('aporte-form').reset();
+            showToast('¡Propuesta publicada con éxito!', 'success');
+        }
+
+        let localPledges = JSON.parse(localStorage.getItem('willcahuain_pledges')) || [
+            { name: "Lucía Benites", city: "Huaraz / Investigadora", rating: "Es la máxima expresión Wari en Áncash", text: "Me comprometo a difundir la importancia de la conservación de nuestro patrimonio.", date: "Ayer" }
+        ];
+
+        function renderLocalPledges() {
+            const container = document.getElementById('local-pledges-list');
+            container.innerHTML = '';
+
+            localPledges.forEach((p) => {
+                const div = document.createElement('div');
+                div.className = 'bg-stoneDark p-4 rounded-2xl border border-white/10 text-xs space-y-2';
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="font-bold text-andeanGold text-sm">${escapeHTML(p.name)}</span>
+                            <span class="text-gray-400 block">${escapeHTML(p.city)}</span>
+                        </div>
+                        <span class="bg-wariClay/30 text-andeanGold px-2.5 py-0.5 rounded-full text-[10px] font-bold">Guardián Oficial</span>
+                    </div>
+                    <p class="text-gray-300 italic">"${escapeHTML(p.text)}"</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function handlePledgeSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('pledge-name').value.trim();
+            const city = document.getElementById('pledge-city').value.trim();
+            const rating = document.getElementById('pledge-rating').value;
+            const text = document.getElementById('pledge-text').value.trim();
+
+            localPledges.unshift({ name, city, rating, text, date: "Hace un momento" });
+            localStorage.setItem('willcahuain_pledges', JSON.stringify(localPledges));
+            
+            renderLocalPledges();
+            document.getElementById('pledge-form').reset();
+            showToast('¡Compromiso registrado e insignia obtenida!', 'success');
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Inicialización general al cargar la página
+        window.onload = function() {
+            renderAportes();
+            renderLocalPledges();
+            selectTourPoint(0);
+
+            // Enlace directo por seguridad para el botón de modo oscuro
+            const themeBtn = document.getElementById('theme-toggle-btn');
+            if (themeBtn) {
+                themeBtn.onclick = toggleDarkMode;
+            }
+        };
+    </script>
+</body>
+
+</html>
